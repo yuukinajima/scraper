@@ -6,17 +6,19 @@ async = require 'async'
 jquery = fs.readFileSync("./src/jquery.js").toString()
 
 
+domain = "b.hatena.ne.jp" # <- start point
+wait   = 100
+hop    = 3
+
 Array::unique = ->
   output = {}
   output[@[key]] = @[key] for key in [0...@length]
   value for key, value of output
 
-domain = "b.hatena.ne.jp" # <- start point
-wait   = 100
 check  = new RegExp( "^http[s]*://#{domain}" );
 pages  = {}
 external = {}
-hop = 3
+
 
 fn = (errors, window, done)->
   arr = window.$("a").map( (i,e)-> e.href ).toArray()
@@ -41,7 +43,8 @@ worker = (url,done)->
       fn(err, window, done )
 
 run = (task)->
-  async.forEachSeries task,worker
+  async.forEachSeries task, worker
+  #async.forEach task, worker  ## you can use this. 
   ,()-> 
     newtask = (url for url,v of pages when v == false)
     console.log "hop:#{hop}"
